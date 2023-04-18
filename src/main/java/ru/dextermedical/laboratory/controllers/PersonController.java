@@ -19,11 +19,6 @@ public class PersonController {
         this.peopleService = peopleService;
     }
 
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello";
-    }
-
     @GetMapping("/people")
     public List<Person> getPeople() {
         return peopleService.findAll();
