@@ -26,9 +26,9 @@ public class Person {
     @Size(min = 2, max = 30, message = "Surname should be between 2 and 30 characters")
     private String surname;
 
-    @Column(name = "date_of_birth")
+/*    @Column(name = "date_of_birth")
     @NotEmpty(message = "Date should not be empty")
-    private LocalDateTime dateOfBirth;
+    private LocalDateTime dateOfBirth;*/
 
     @Column(name = "email")
     @Email
@@ -41,7 +41,7 @@ public class Person {
     public Person(String name, String surname, LocalDateTime dateOfBirth, String email) {
         this.name = name;
         this.surname = surname;
-        this.dateOfBirth = dateOfBirth;
+        //this.dateOfBirth = dateOfBirth;
         this.email = email;
     }
 
@@ -69,13 +69,13 @@ public class Person {
         this.surname = surname;
     }
 
-    public LocalDateTime getDateOfBirth() {
+/*    public LocalDateTime getDateOfBirth() {
         return dateOfBirth;
-    }
+    }*/
 
-    public void setDateOfBirth(LocalDateTime dateOfBirth) {
+/*    public void setDateOfBirth(LocalDateTime dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }
+    }*/
 
     public String getEmail() {
         return email;
@@ -91,7 +91,7 @@ public class Person {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
+                /*", dateOfBirth=" + dateOfBirth +*/
                 ", email='" + email + '\'' +
                 '}';
     }
