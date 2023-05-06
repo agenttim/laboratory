@@ -36,5 +36,10 @@ public class PeopleService {
         peopleRepository.save(person);
     }
 
+    public Integer saveAndReturnId(Person person) {
+        Person savedPerson = peopleRepository.save(person);
+        return savedPerson.getId();
+    }
+
 
 }

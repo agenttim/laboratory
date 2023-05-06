@@ -10,6 +10,10 @@
       <div class="form-control">
         <label for="name">Введите имя</label>
         <input type="text" id="name" v-model.trim="name"/>
+        <label for="surname">Введите фамилию</label>
+        <input type="text" id="surname" v-model.trim="surname"/>
+        <label for="email">Введите электронную почту</label>
+        <input type="text" id="email" v-model.trim="email"/>
       </div>
 
       <button class="btn primary" v-bind:disabled="name.length === 0">Создать человека</button>
@@ -17,6 +21,7 @@
 
     <app-people-list
         v-bind:people="people"
+        v-on:remove="removePerson"
     ></app-people-list>
   </div>
 
@@ -30,20 +35,52 @@ export default {
     return {
       info: null,
       people: [1, 2, 3],
-      name: ''
+      name: '',
+      surname: '',
+      email: ''
     };
   },
   methods: {
-    createPerson() {
+    removePerson(id) {
 
     },
-    loadPeople() {
-      fetch('http://localhost:8081/people', {mode: "cors"})
-          .then(res => res.json())
-          .then((data) => this.info = data)
-          .then((data) => this.people = data)
-          .then(userNames => console.log(userNames))
-          .catch(error => console.log(error))
+    async createPerson() {
+      const response = await fetch('http://localhost:8081/people', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: this.name,
+          surname: this.surname,
+          email: this.email
+        })
+      })
+
+      const DBData = await response.json()
+
+      this.people.push({
+        name: this.name,
+        surname: this.surname,
+        email: this.email,
+        id: DBData
+      })
+
+      this.name = ''
+      this.surname = ''
+      this.email = ''
+    },
+    async loadPeople() {
+      try {
+        let res = await fetch('http://localhost:8081/people', {mode: "cors"});
+        let data = await res.json();
+        this.info = data;
+        this.people = data;
+        let names = data.map(user => user.name); // создаем массив из имен пользователей
+        console.log(names); // выводим массив в консоль
+      } catch (error) {
+        console.log(error);
+      }
     }
   },
   mounted() {
