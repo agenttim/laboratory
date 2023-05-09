@@ -10,6 +10,7 @@ import ru.dextermedical.laboratory.repositories.PeopleRepository;
 import ru.dextermedical.laboratory.util.PersonErrorResponse;
 import ru.dextermedical.laboratory.util.PersonNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,13 +34,26 @@ public class PeopleService {
 
     @Transactional
     public void save(Person person) {
+        enrichPerson(person);
         peopleRepository.save(person);
     }
 
+    public void delete(int id) {
+        Person person = peopleRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException());
+
+        peopleRepository.delete(person);
+    }
+
     public Integer saveAndReturnId(Person person) {
+        enrichPerson(person);
         Person savedPerson = peopleRepository.save(person);
         return savedPerson.getId();
     }
 
-
+    private void enrichPerson(Person person) {
+        person.setCreatedAt(LocalDateTime.now());
+        person.setUpdatedAt(LocalDateTime.now());
+        person.setCreatedWho("ADMIN");
+    }
 }

@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <div class="card">
-      {{ info }}
-    </div>
+    <app-alert :alert="alert" @close="alert = null"></app-alert>
 
     <form class="card" v-on:submit.prevent="createPerson">
       <h2>Работа с базой данных</h2>
@@ -29,20 +27,29 @@
 
 <script>
 import AppPeopleList from "@/main/resources/vue/component/AppPeopleList";
+import AppAlert from "@/main/resources/vue/component/AppAlert";
 
 export default {
   data() {
     return {
-      info: null,
       people: [1, 2, 3],
       name: '',
       surname: '',
-      email: ''
+      email: '',
+      alert: null
     };
   },
   methods: {
-    removePerson(id) {
-
+    async removePerson(id) {
+      await fetch(`http://localhost:8081/people/${id}`, {
+        method: 'DELETE'
+      })
+      this.people = this.people.filter(person => person.id !== id)
+      this.alert = {
+        type: 'primary',
+        title: 'Успешно',
+        text: 'Пользователь удален'
+      }
     },
     async createPerson() {
       const response = await fetch('http://localhost:8081/people', {
@@ -74,19 +81,23 @@ export default {
       try {
         let res = await fetch('http://localhost:8081/people', {mode: "cors"});
         let data = await res.json();
-        this.info = data;
+        if (!data) {
+          throw new Error("Список пуст");
+        }
         this.people = data;
-        let names = data.map(user => user.name); // создаем массив из имен пользователей
-        console.log(names); // выводим массив в консоль
-      } catch (error) {
-        console.log(error);
+              } catch (e) {
+        this.alert = {
+          type: 'danger',
+          title: 'Ошибка',
+          text: e.message
+        }
       }
     }
   },
   mounted() {
     this.loadPeople()
   },
-  components: {AppPeopleList}
+  components: {AppPeopleList, AppAlert}
 }
 </script>
 
