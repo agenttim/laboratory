@@ -51,6 +51,22 @@ public class PeopleService {
         return savedPerson.getId();
     }
 
+    public void update(int id, Person person) {
+        // найти человека по id
+        Person existing = peopleRepository.findById(id).orElseThrow(() -> new PersonNotFoundException());
+
+        // обновить свойства человека
+        existing.setName(person.getName());
+        existing.setSurname(person.getSurname());
+        existing.setEmail(person.getEmail());
+
+        // обновить данные о последнем обновлении базы данных
+        existing.setUpdatedAt(LocalDateTime.now());
+
+        // сохранить обновленного человека
+        peopleRepository.save(existing);
+    }
+
     private void enrichPerson(Person person) {
         person.setCreatedAt(LocalDateTime.now());
         person.setUpdatedAt(LocalDateTime.now());

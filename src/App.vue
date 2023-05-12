@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+
+    <app-map></app-map>
+
     <app-alert :alert="alert" @close="alert = null"></app-alert>
 
     <form class="card" v-on:submit.prevent="createPerson">
@@ -20,6 +23,7 @@
     <app-people-list
         v-bind:people="people"
         v-on:remove="removePerson"
+        v-on:fill="fillForm"
     ></app-people-list>
   </div>
 
@@ -28,6 +32,7 @@
 <script>
 import AppPeopleList from "@/main/resources/vue/component/AppPeopleList";
 import AppAlert from "@/main/resources/vue/component/AppAlert";
+import AppMap from "@/main/resources/vue/component/AppMap";
 
 export default {
   data() {
@@ -36,10 +41,57 @@ export default {
       name: '',
       surname: '',
       email: '',
-      alert: null
+      alert: null,
+      selectedPersonId: null
     };
   },
   methods: {
+    fillForm(id) {
+      // найти человека по id
+      const person = this.people.find(person => person.id === id);
+      // заполнить форму данными человека
+      this.name = person.name;
+      this.surname = person.surname;
+      this.email = person.email;
+      // установить выбранный id
+      this.selectedPersonId = id;
+    },
+    async updatePerson(id) {
+      // получить данные человека по id
+      // const person = this.people.find(person => person.id === id);
+
+      // отправить запрос PUT на адрес /people/{id} с телом, содержащим объект PersonDTO
+      const response = await fetch(`http://localhost:8081/people/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: this.name,
+          surname: this.surname,
+          email: this.email
+        })
+      })
+
+      // обработать ответ от сервера
+      if (response.ok) {
+        // обновить данные человека в массиве people
+        this.people = this.people.map(person => person.id === id ? {...person, name: this.name, surname: this.surname, email: this.email} : person);
+        // показать сообщение об успехе
+        this.alert = {
+          type: 'primary',
+          title: 'Успешно',
+          text: 'Данные человека обновлены'
+        }
+      } else {
+        // показать сообщение об ошибке
+        this.alert = {
+          type: 'danger',
+          title: 'Ошибка',
+          text: 'Не удалось обновить данные человека'
+        }
+      }
+    },
     async removePerson(id) {
       await fetch(`http://localhost:8081/people/${id}`, {
         method: 'DELETE'
@@ -52,30 +104,45 @@ export default {
       }
     },
     async createPerson() {
-      const response = await fetch('http://localhost:8081/people', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      if (this.selectedPersonId) {
+        // вызвать метод updatePerson с id и данными из формы
+        await this.updatePerson(this.selectedPersonId, {
           name: this.name,
           surname: this.surname,
           email: this.email
+        });
+        // сбросить выбранный id
+        this.selectedPersonId = null;
+      } else {
+        const response = await fetch('http://localhost:8081/people', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: this.name,
+            surname: this.surname,
+            email: this.email
+          })
         })
-      })
 
-      const DBData = await response.json()
+        const DBData = await response.json()
 
-      this.people.push({
-        name: this.name,
-        surname: this.surname,
-        email: this.email,
-        id: DBData
-      })
+        this.people.push({
+          name: this.name,
+          surname: this.surname,
+          email: this.email,
+          id: DBData
+        })
 
-      this.name = ''
-      this.surname = ''
-      this.email = ''
+        this.name = ''
+        this.surname = ''
+        this.email = ''
+      }
+      // очистить форму
+      this.name = '';
+      this.surname = '';
+      this.email = '';
     },
     async loadPeople() {
       try {
@@ -85,7 +152,7 @@ export default {
           throw new Error("Список пуст");
         }
         this.people = data;
-              } catch (e) {
+      } catch (e) {
         this.alert = {
           type: 'danger',
           title: 'Ошибка',
@@ -97,7 +164,7 @@ export default {
   mounted() {
     this.loadPeople()
   },
-  components: {AppPeopleList, AppAlert}
+  components: {AppPeopleList, AppAlert, AppMap}
 }
 </script>
 

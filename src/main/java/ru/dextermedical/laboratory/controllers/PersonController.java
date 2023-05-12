@@ -14,6 +14,7 @@ import ru.dextermedical.laboratory.services.PeopleService;
 import ru.dextermedical.laboratory.util.PersonErrorResponse;
 import ru.dextermedical.laboratory.util.PersonNotCreatedException;
 import ru.dextermedical.laboratory.util.PersonNotFoundException;
+import ru.dextermedical.laboratory.util.PersonNotUpdatedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -69,6 +70,30 @@ public class PersonController {
         try {
             peopleService.delete(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (PersonNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/people/{id}")
+    public ResponseEntity<Void> updatePerson(@PathVariable("id") int id, @RequestBody @Valid PersonDTO personDTO,
+                                             BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ").append(error.getDefaultMessage())
+                        .append(";");
+            }
+
+            throw new PersonNotUpdatedException(errorMsg.toString());
+        }
+
+        try {
+            peopleService.update(id, convertToPerson(personDTO));
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (PersonNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
