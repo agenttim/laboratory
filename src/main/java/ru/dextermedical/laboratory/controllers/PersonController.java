@@ -16,7 +16,6 @@ import ru.dextermedical.laboratory.util.PersonNotCreatedException;
 import ru.dextermedical.laboratory.util.PersonNotFoundException;
 import ru.dextermedical.laboratory.util.PersonNotUpdatedException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
