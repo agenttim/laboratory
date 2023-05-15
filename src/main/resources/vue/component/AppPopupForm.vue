@@ -1,13 +1,13 @@
 <template>
   <div>
-    <form @submit.prevent="submitForm">
+    <form class="modal" @submit.prevent="submitForm">
       <label>Введите имя:</label>
       <input type="text" v-model="name" />
       <br />
       <label>Введите адрес:</label>
       <input type="text" v-model="address" />
       <br />
-      <button type="submit">Отправить</button>
+      <button class="btn primary" type="submit">Отправить</button>
     </form>
   </div>
 </template>

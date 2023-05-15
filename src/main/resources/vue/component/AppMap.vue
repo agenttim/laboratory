@@ -111,12 +111,15 @@ export default {
 </script>
 
 <style scoped>
-.card {
+
+#map {
+  height: 100%;
   height: 500px;
   position: relative;
 }
 
-#map {
-  height: 100%;
+.AppPopupForm {
+  position: relative;
+  z-index: 9999;
 }
 </style>
