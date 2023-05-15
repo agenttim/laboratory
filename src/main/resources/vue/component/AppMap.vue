@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div id="map"></div>
-    <AppPopupForm v-if="showForm" @submit="onFormSubmit" />
+    <app-popup-form v-if="showForm" @submit="onFormSubmit" />
   </div>
 
 </template>
