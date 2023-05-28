@@ -100,6 +100,19 @@ export default {
             marker.bindPopup(
                 `<b>${pointObject.name}</b><br>${pointObject.address}`
             );
+            // Создаем координаты вершин многоугольника
+            var latlngs = [
+              [54.712, 55.999],
+              [54.713, 56.001],
+              [54.711, 56.002],
+              [54.710, 56.000]
+            ];
+
+// Создаем многоугольник из координат и добавляем его на карту
+            var polygon = L.polygon(latlngs).addTo(this.map);
+
+// Добавляем всплывающее окно с информацией о многоугольнике
+            polygon.bindPopup("Это площадной объект");
           });
         });
 
@@ -116,10 +129,5 @@ export default {
   height: 100%;
   height: 500px;
   position: relative;
-}
-
-.AppPopupForm {
-  position: relative;
-  z-index: 9999;
 }
 </style>

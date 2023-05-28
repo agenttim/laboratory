@@ -12,6 +12,7 @@
     "core-js": "^3.8.3",
     "leaflet": "^1.9.3",
     "leaflet-contextmenu": "^1.4.0",
+    "leaflet-editable": "^1.2.0",
     "vue": "^3.2.13"
   },
   "devDependencies": {
