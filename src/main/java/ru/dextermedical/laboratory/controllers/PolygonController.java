@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RequestMapping("/polygons")
 @RestController
+@CrossOrigin()
 public class PolygonController {
 
     @Autowired

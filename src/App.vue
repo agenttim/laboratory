@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <app-map-polygon></app-map-polygon>
+    <app-map2></app-map2>
+<!--    <app-map-polygon></app-map-polygon-->>
 <!--    <app-map></app-map>-->
     <button id="person-button" class="btn" @click="toggleUsers">Управление пользователями</button>
     <app-users v-if="showUsers"></app-users>
@@ -10,12 +11,15 @@
 
 <script>
 /*import AppMap from "@/main/resources/vue/component/AppMap";*/
+import AppMap2 from "@/main/resources/vue/component/AppMap2";
+/*
 import AppMapPolygon from "@/main/resources/vue/component/AppMapPolygon";
+*/
 import AppUsers from "@/main/resources/vue/component/AppUsers";
 import AppPointObject from "@/main/resources/vue/component/AppPointObject";
 
 export default {
-  components: {/*AppMap, */AppUsers, AppPointObject, AppMapPolygon},
+  components: {/*AppMap, */AppMap2, AppUsers, AppPointObject, /*AppMapPolygon*/},
   data() {
     return {
       showUsers: false
