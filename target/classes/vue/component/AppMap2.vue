@@ -26,7 +26,7 @@ export default {
     // Create a map instance
     this.map = L.map("map",{
       attributionControl: false,
-      editable: true, // включаем режим редактирования
+      editable: true // включаем режим редактирования
     }).setView(this.center, this.zoom);
 
     // Add a tile layer to the map
@@ -40,32 +40,15 @@ export default {
           this.polygons = data;
 
           // Add the polygons to the map
-          let selectedLayer = null; // переменная для хранения выбранного слоя
-
           for (let polygon of this.polygons) {
-            // Преобразуем строку в массив координат
-            let coords = polygon.polygon.slice(2, -2).split("),(").map((coords) => coords.split(",").map((num) => parseFloat(num)));
-            // Выводим массив координат в консоль
-            console.log(coords);
-            let layer = L.polygon(coords, { color: polygon.color }).addTo(this.map);
+            let layer = L.polygon(polygon.polygon.split("),(").slice(1, -1).map((coords) => coords.split(",").map((num) => parseFloat(num))), { color: polygon.color }).addTo(this.map);
 
-            // Добавляем обработчик события click для каждого слоя
-            layer.on('click', (e) => {
-              // Проверяем, есть ли уже выбранный слой
-              if (selectedLayer) {
-                // Отключаем режим редактирования для предыдущего слоя
-                selectedLayer.disableEdit();
-              }
-              // Включаем режим редактирования для текущего слоя
-              e.target.enableEdit();
-              // Обновляем значение переменной selectedLayer на текущий слой
-              selectedLayer = e.target;
-            });
+            layer.enableEdit();
 
             layer.on('editable:vertex:dragend', (e) => {
               // Получаем новые координаты фигуры
-              let newCoords = e.target.getLatLngs()[0].map((latlng) => [latlng.lat.toFixed(6), latlng.lng.toFixed(6)]);
-              newCoords = "((" + newCoords.join("),(") + "))"
+              let newCoords = e.layer.getLatLngs()[0].map((latlng) => [latlng.lat, latlng.lng]);
+              newCoords = "((" + newCoords.join(")(") + "))"
               console.log(newCoords)
               // Отправляем их на сервер с помощью fetch
               fetch(`http://localhost:8081/polygons/${polygon.id}`, {
@@ -89,6 +72,45 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+
+
+
+
+
+/*    // Добавляем обработчик события для каждой фигуры
+    for (let polygon of this.polygons) {
+      let layer = L.polygon(polygon.polygon.split("),(").slice(1, -1).map((coords) => coords.split(",").map((num) => parseFloat(num))), { color: polygon.color }).addTo(this.map);
+      layer.on('click', (e) => {
+        e.layer.bringToFront();
+
+        // Включаем режим редактирования для выбранной фигуры
+        e.layer.enableEdit();
+        console.log(e)
+      });
+
+      layer.on('editable:vertex:dragend', (e) => {
+        // Получаем новые координаты фигуры
+        let newCoords = e.layer.getLatLngs()[0].map((latlng) => [latlng.lat, latlng.lng]);
+        // Отправляем их на сервер с помощью fetch
+        fetch(`http://localhost:8081/polygons/${polygon.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({polygon: newCoords})
+        })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+      });
+    }*/
+
+
+
   },
 };
 </script>
