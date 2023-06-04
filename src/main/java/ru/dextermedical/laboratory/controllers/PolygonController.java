@@ -43,9 +43,12 @@ public class PolygonController {
     public ResponseEntity<PolygonObjects> updatePolygon(@PathVariable("id") Long id, @RequestBody PolygonObjects polygon) {
         Optional<PolygonObjects> existing = polygonRepository.findById(id);
         if (existing.isPresent()) {
-            existing.get().setName(polygon.getName());
-            existing.get().setColor(polygon.getColor());
-            existing.get().setPolygon(polygon.getPolygon());
+            if (polygon.getName() != null)
+                existing.get().setName(polygon.getName());
+            if (polygon.getColor() != null)
+                existing.get().setColor(polygon.getColor());
+            if (polygon.getPolygon() != null)
+                existing.get().setPolygon(polygon.getPolygon());
             PolygonObjects updated = polygonRepository.save(existing.get());
             return ResponseEntity.ok(updated);
         } else {

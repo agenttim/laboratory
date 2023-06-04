@@ -41,15 +41,37 @@ export default {
 
           // Add the polygons to the map
           for (let polygon of this.polygons) {
-            let layer = L.polygon(polygon.polygon.split("),(").slice(1, -1).map((coords) => coords.split(",").map((num) => parseFloat(num))), { color: polygon.color }).addTo(this.map);
+            console.log(polygon);
+            // Преобразуем строку в массив координат
+            let coords = polygon.polygon.slice(2, -2).split("),(").map((coords) => coords.split(",").map((num) => parseFloat(num)));
+            // Выводим массив координат в консоль
+            console.log(coords);
+            let layer = L.polygon(coords, { color: polygon.color }).addTo(this.map);
 
-            layer.on('click', (e) => {
-              e.layer.bringToFront();
+            layer.enableEdit();
 
-              // Включаем режим редактирования для выбранной фигуры
-              e.layer.enableEdit();
-              console.log(e)
+            layer.on('editable:vertex:dragend', (e) => {
+              // Получаем новые координаты фигуры
+              let newCoords = e.layer.getLatLngs()[0].map((latlng) => [latlng.lat, latlng.lng]);
+              newCoords = "((" + newCoords.join("),(") + "))"
+              console.log(newCoords)
+              // Отправляем их на сервер с помощью fetch
+              fetch(`http://localhost:8081/polygons/${polygon.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({polygon: newCoords})
+              })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log(data);
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
             });
+
           }
         })
         .catch((error) => {
